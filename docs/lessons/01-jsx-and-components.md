@@ -6,6 +6,10 @@
 
 **JSX** (JavaScript XML) is a syntax extension for JavaScript that looks like HTML but lives in your JavaScript code. It's the primary way we describe user interfaces in React and React Native.
 
+> **💡 JSX Philosophy:** JSX handles **structure** (elements), JavaScript handles **logic** (data/conditions)
+
+This separation of concerns is the key to understanding JSX!
+
 **Why is this the primary way?**
 
 Without JSX, you'd have to create UI using nested function calls:
@@ -185,7 +189,102 @@ function Welcome() {
    }
    ```
 
-### React Native vs React Web
+### React vs React Native - Understanding the Relationship
+
+**What is React?**
+- React is a **JavaScript library** for building user interfaces
+- It provides concepts: components, JSX, hooks, state management
+- React itself doesn't know about web OR mobile - it's just the core ideas
+
+**What is React Native?**
+- React Native is a **framework** that adapts React's concepts for mobile
+- Uses the same React concepts (components, JSX, hooks)
+- But creates **native mobile UI** instead of HTML
+
+**The Technology Stacks:**
+
+```
+WEB APP:
+Your Code (React components)
+└── React (JavaScript library)
+    └── React DOM (web adapter)
+        └── Browser (renders HTML/CSS)
+            └── User sees web page
+
+MOBILE APP (with Expo):
+Your Code (React Native components)
+└── React (same core concepts!)
+    └── React Native (mobile adapter)
+        └── JavaScript Bridge
+            └── iOS (Swift/Obj-C) or Android (Kotlin/Java)
+                └── Native UI Components
+                    └── User sees native mobile UI
+```
+
+**Breaking Down the Pieces:**
+
+**1. React Native (mobile adapter - What is this exactly?)**
+- **It's not magic - it's actual JavaScript code!**
+- React Native is a collection of JavaScript libraries and native code that:
+  - Provides mobile components (`View`, `Text`, `Image`, etc.)
+  - Maps each component to native platform equivalents
+  - Contains the bridge code that communicates with iOS/Android
+
+- **Example mapping**:
+  ```
+  You write:     <View>              (React Native component)
+  React Native:  Maps it to...
+  iOS:          UIView               (native Swift/Obj-C class)
+  Android:      android.view.View    (native Kotlin/Java class)
+  ```
+
+- **Why "adapter"?**: It adapts (translates) React's concepts into native mobile components
+
+**2. JavaScript Bridge (Runs at Runtime)**
+- **When does this happen?** RUNTIME - while your app is running on a phone/simulator
+- **The Problem**: Your JavaScript code runs in a JavaScript engine, but native UI runs in Swift/Kotlin - they can't talk directly
+- **The Solution**: A bridge that passes messages back and forth **while the app is running**
+
+- **How it works at runtime**:
+  ```
+  App is running on your phone...
+  
+  You tap a button →
+  Native iOS:          "User tapped at coordinates (100, 200)"
+  JavaScript Bridge:   [Passes message to JavaScript]
+  Your JavaScript:     handlePress() function runs
+  JavaScript:          "Update the UI - show a new screen"
+  JavaScript Bridge:   [Passes message back to native]
+  Native iOS:          Creates and shows the new screen
+  
+  All of this happens in milliseconds!
+  ```
+
+- **Think of it like**: A live translator at a meeting, constantly translating between two languages in real-time
+
+**Visual Example:**
+```
+<View style={{backgroundColor: 'blue'}}>  ← Your JavaScript code
+    ↓
+React Native: "Create a View with blue background"
+    ↓
+JavaScript Bridge: [Sends message]
+    ↓
+iOS: Creates actual UIView (blue rectangle on screen)
+```
+
+**Key Points:**
+- ✅ **React** = Core ideas (components, JSX, state, hooks)
+- ✅ **React DOM** = Adapts React for browsers (creates HTML)
+- ✅ **React Native** = Adapts React for mobile (creates native UI)
+- ✅ **JavaScript Bridge** = Communication layer between JavaScript and native code
+- ✅ **Expo** = Development tools on top of React Native
+- ✅ You write JavaScript, but get **real native mobile components**!
+
+**Why "React Native"?**
+It's called "React Native" because it uses React's concepts to build **native** mobile apps (not web apps running in a mobile browser).
+
+### React Native vs React Web - Code Comparison
 
 **React Web (HTML):**
 ```jsx
@@ -196,7 +295,7 @@ function Welcome() {
 </div>
 ```
 
-**React Native (Mobile):**
+**React Native (Mobile - Native UI):**
 ```tsx
 <View>
   <Text>Title</Text>
@@ -204,6 +303,8 @@ function Welcome() {
   <TouchableOpacity><Text>Click me</Text></TouchableOpacity>
 </View>
 ```
+
+Same React concepts, different components!
 
 **Core React Native Components:**
 - `<View>` → Like `<div>` - container for other components
@@ -436,21 +537,139 @@ function EnvelopeStatus() {
 
 Let's create a simple component that displays information about a budget envelope.
 
-**Step 1: Create the Component File**
+**Prerequisites: Is React Native Installed?**
+
+Before you can use `import { View, Text } from 'react-native'`, React Native needs to be installed in your project.
+
+**Check if it's already installed:**
+
+```bash
+# In your project root, check package.json
+cat package.json | grep react-native
+```
+
+You should see something like:
+```json
+"react-native": "0.79.5"
+```
+
+**If React Native is NOT installed:**
+
+This repo was set up with **Expo**, so React Native should already be in `package.json`.
+
+**Wait - What is Expo? Does React Native still work with Expo?**
+
+Yes! React Native absolutely still works. Here's how they relate:
+
+**React Native** = The core framework for building mobile apps with JavaScript
+- Provides components like `View`, `Text`, `Image`
+- Handles the bridge between JavaScript and native iOS/Android code
+
+**Expo** = A set of tools and services built ON TOP OF React Native
+- Makes React Native development easier and faster
+- Provides extra features (camera, location, notifications, etc.)
+- Handles build configuration automatically
+- You can develop without installing Xcode or Android Studio
+
+**The Relationship:**
+```
+Expo
+└── Uses React Native internally
+    └── Communicates with iOS/Android native code
+```
+
+When you:
+- Write `import { View, Text } from 'react-native'` - You're using React Native
+- Run `npm start` (which runs `expo start`) - Expo provides the dev server
+- Use `expo-camera` or `expo-location` - You're using Expo's extra features
+
+**Think of it like:**
+- **React Native** = The engine of a car
+- **Expo** = The complete car with nice features, GPS, and easy controls
+
+You get both! Expo makes React Native easier to use, but you still use `react-native` for your components.
+
+If for some reason React Native is missing from `node_modules/`, install dependencies:
+
+```bash
+# Install ALL dependencies from package.json
+npm install
+# This installs everything listed in package.json, including:
+# - react-native, react, expo, and all other dependencies
+```
+
+**npm install - Two Ways:**
+
+```bash
+# Option 1: Install everything from package.json (recommended)
+npm install
+# Reads package.json, installs ALL packages listed
+
+# Option 2: Install individual packages
+npm install react-native
+npm install react
+npm install expo
+# Installs specific packages one at a time
+# Also adds them to package.json if not already there
+```
+
+**Which to use?**
+- **Use `npm install` (no package name)**: When working with an existing project (like this one)
+- **Use `npm install <package-name>`**: When adding a NEW package to your project
+
+**Why does this work?**
+- When you import `'react-native'`, Node.js looks in `node_modules/react-native/`
+- `npm install` downloads all packages listed in `package.json` into `node_modules/`
+- Your imports will fail if the package isn't in `node_modules/`
+
+**Verify it worked:**
+```bash
+ls node_modules/react-native
+# Should show the react-native package files
+```
+
+Now you're ready to import from React Native! ✅
+
+**Step 1: Create the Directory Structure**
+
+First, make sure the `components/budget` folder exists. In your terminal:
+
+```bash
+# Navigate to your project root
+cd /Users/torbenanderson/development/projects/learn-react-native
+
+# Create the directory structure
+mkdir -p components/budget
+```
+
+Or in your code editor:
+- Right-click the project root
+- Select "New Folder" 
+- Create `components` folder
+- Inside that, create `budget` folder
+
+**Step 2: Create the Component File**
 
 Create a new file: `/Users/torbenanderson/development/projects/learn-react-native/components/budget/EnvelopeCard.tsx`
+
+In your code editor:
+- Right-click the `components/budget` folder
+- Select "New File"
+- Name it `EnvelopeCard.tsx`
+
+Now add this code to the file:
 
 ```typescript
 import { View, Text } from 'react-native';
 
 function EnvelopeCard() {
-  // Step 2: Define envelope data
+  // Step 3: Define envelope data
   const envelopeName = "Groceries";
   const allocated = 500;
   const spent = 325;
   const remaining = allocated - spent;
   
-  // Step 3: Return the UI
+  // Step 4: Return the UI
   return (
     <View>
       <Text>{envelopeName}</Text>
@@ -464,7 +683,14 @@ function EnvelopeCard() {
 export default EnvelopeCard;
 ```
 
-**Step 2: Use Your Component**
+**Why does `@/` work in imports?**
+
+You might wonder about the `@/` in import paths (we'll use this next). This is a path alias configured in `tsconfig.json`:
+- `@/` = project root
+- `@/components/budget/EnvelopeCard` = `/Users/torbenanderson/development/projects/learn-react-native/components/budget/EnvelopeCard`
+- Makes imports cleaner and easier to refactor
+
+**Step 5: Use Your Component**
 
 Open `/Users/torbenanderson/development/projects/learn-react-native/app/(tabs)/index.tsx` and replace its contents:
 
@@ -495,14 +721,21 @@ const styles = StyleSheet.create({
 });
 ```
 
-**Step 3: Run Your App**
+**Step 6: Run Your App**
 
 ```bash
 npm start
 # Press 'w' for web, 'i' for iOS, or 'a' for Android
 ```
 
-**Step 4: Experiment!**
+**Troubleshooting:**
+- If you see "Cannot find module '@/components/budget/EnvelopeCard'", make sure:
+  - The file exists at the correct path
+  - The filename is exactly `EnvelopeCard.tsx` (capital E, capital C)
+  - You saved the file (Cmd+S / Ctrl+S)
+- If the terminal shows errors, try stopping (Ctrl+C) and running `npm start` again
+
+**Step 7: Experiment!**
 
 Try changing:
 - The envelope name

@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "HelloWorldAppApp",
-    "slug": "HelloWorldAppApp",
+    "name": "HelloWorldAppAppAppApp",
+    "slug": "HelloWorldAppAppAppApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "helloworldappapp",
+    "scheme": "helloworldappappappapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.torbenanderson.HelloWorldAppApp",
+      "bundleIdentifier": "com.torbenanderson.HelloWorldAppAppAppApp",
       "appleTeamId": "3MMGDUXJ8T"
     },
     "android": {
@@ -19,7 +19,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.torbenanderson.HelloWorldAppApp"
+      "package": "com.torbenanderson.HelloWorldAppAppAppApp"
     },
     "web": {
       "bundler": "metro",
