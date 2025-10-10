@@ -1,6 +1,140 @@
+# React Native Learning Machine 🚀
+
+Welcome to your personalized React Native learning platform! This repo is designed to teach you React Native by building a **real personal budgeting app** based on the envelope budgeting system.
+
+## What is This?
+
+This is both:
+1. **A comprehensive learning curriculum** with 28 structured lessons
+2. **A real app** you'll build (envelope budget tracker)
+3. **A fundable business** ready for app store deployment
+
+By the end, you'll have mastered React Native AND built a complete, professional app ready to launch!
+
+## Quick Start
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Start Learning!
+```bash
+npm start
+# Press 'w' for web, 'i' for iOS, or 'a' for Android
+```
+
+### 3. Follow the Curriculum
+Start with [Lesson 01: JSX and Components](./docs/lessons/01-jsx-and-components.md)
+
+## Learning Path
+
+### 📚 [View Full Curriculum](./docs/curriculum-overview.md)
+
+**Phase 1: Core Concepts (Days 1-7)** ✅ *AVAILABLE NOW*
+- Lesson 01: JSX and Components
+- Lesson 02: Props and Composition
+- Lesson 03: State with useState
+- Lesson 04: Lists and Keys
+- Lesson 05: Styling in React Native
+- Lesson 06: Navigation Basics
+- Lesson 07: Forms and Input Handling
+
+**Phase 2: Data & APIs (Days 8-14)** 🚧 *Coming Soon*
+- State management with Zustand
+- Data persistence with AsyncStorage
+- Custom hooks
+- Error handling
+
+**Phase 3: Advanced UI (Days 15-20)** 🚧 *Coming Soon*
+- Animations and gestures
+- Charts and visualizations
+- Dark mode and theming
+
+**Phase 4: Production Ready (Days 21-28)** 🚧 *Coming Soon*
+- Authentication
+- Cloud sync
+- App store deployment
+
+## What You'll Build
+
+A **Digital Envelope Budget App** featuring:
+- 💰 Envelope budgeting system (allocate income to categories)
+- 💸 Track expenses from each envelope
+- 📊 Beautiful, minimal interface
+- 📱 Works 100% offline
+- 🎨 Professional design
+
+**Core Philosophy**: Simplicity first, visual clarity, quick actions.
+
+## Resources
+
+- 📖 **Curriculum**: [docs/curriculum-overview.md](./docs/curriculum-overview.md)
+- 💡 **Learning Guide**: [docs/learning-guide.md](./docs/learning-guide.md)
+- 📚 **Lessons**: [docs/lessons/](./docs/lessons/)
+- 📘 **Book Reference**: "React Native in Action" by Nader Dabit
+
+## Architecture Decisions
+
+- **Period Management**: Monthly only (simple MVP)
+- **Initial Setup**: Empty slate (users create envelopes)
+- **Unallocated Funds**: Flexible (allocate anytime)
+- **Transaction Entry**: Quick entry + full form
+- **Currency**: USD only initially
+
+## Project Structure
+
+```
+learn-react-native/
+├── docs/
+│   ├── curriculum-overview.md
+│   ├── learning-guide.md
+│   └── lessons/
+│       ├── 01-jsx-and-components.md
+│       ├── 02-props-and-composition.md
+│       └── ... (28 lessons total)
+├── app/                    # Your budget app screens
+│   ├── (tabs)/
+│   ├── envelope/
+│   └── transaction/
+├── components/
+│   ├── budget/            # Budget-specific components
+│   └── ui/                # Reusable UI components
+├── types/
+│   └── budget.ts          # TypeScript types
+├── constants/
+│   ├── Colors.ts
+│   └── Design.ts          # Design tokens
+└── stores/                # State management (Phase 2)
+```
+
+## Daily Learning Routine
+
+1. **Read lesson** (15-20 min)
+2. **Study examples** (15-20 min)
+3. **Complete exercise** (30-60 min)
+4. **Test your work** (10-15 min)
+5. **Review checkpoint** (5 min)
+
+**Total: 1-2 hours per day**
+
+You can go faster or slower - learn at your own pace!
+
+## Support
+
+- ✅ Checkpoints in every lesson
+- ✅ Common issues and solutions
+- ✅ Code examples you can copy
+- ✅ Step-by-step instructions
+- ✅ Book references for deeper learning
+
+---
+
+# Technical Documentation
+
 # Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app), now configured as a React Native Learning Machine!
 
 ## Get started
 
