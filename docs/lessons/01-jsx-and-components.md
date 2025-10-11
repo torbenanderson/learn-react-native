@@ -2,6 +2,83 @@
 
 ## 📚 Theory
 
+### TypeScript vs JavaScript - What Are We Actually Writing?
+
+Before we dive into JSX, let's clarify what language you're actually using in this project.
+
+**JavaScript** is the programming language that runs in browsers and on servers (via Node.js). It's what powers the web and mobile apps.
+
+**TypeScript** is a superset of JavaScript created by Microsoft. Think of it as "JavaScript with extra features."
+
+**The Relationship:**
+```
+TypeScript = JavaScript + Optional Type Annotations + Extra Features
+```
+
+**Key Differences:**
+
+```javascript
+// JavaScript (.js or .jsx files)
+function greet(name) {
+  return "Hello, " + name;
+}
+greet("Torben");        // ✅ Works
+greet(123);             // ✅ Also works (but might cause bugs!)
+greet();                // ✅ Works but returns "Hello, undefined"
+```
+
+```typescript
+// TypeScript (.ts or .tsx files)
+function greet(name: string): string {
+  return "Hello, " + name;
+}
+greet("Torben");        // ✅ Works
+greet(123);             // ❌ ERROR: Argument must be a string
+greet();                // ❌ ERROR: Missing required argument
+```
+
+**Why Use TypeScript?**
+
+1. **Catch Errors Before Runtime**
+   - JavaScript finds errors when code runs (too late!)
+   - TypeScript finds errors as you type (save hours of debugging)
+
+2. **Better Autocomplete**
+   - Your editor knows what properties/methods are available
+   - Suggests valid options as you type
+
+3. **Self-Documenting Code**
+   - Types show what data a function expects
+   - Easier for others (and future you) to understand
+
+4. **Refactoring Safety**
+   - Rename a variable → TypeScript updates all uses
+   - Change a function signature → TypeScript shows what breaks
+
+**TypeScript in This Project:**
+
+Notice your files end in `.tsx` (not `.jsx`):
+- `.tsx` = TypeScript + JSX (React syntax)
+- `.jsx` = JavaScript + JSX
+- `.ts` = TypeScript (no JSX)
+- `.js` = JavaScript (no JSX)
+
+**The Good News:** You can write TypeScript that looks exactly like JavaScript! The type annotations are optional:
+
+```typescript
+// This is valid TypeScript (but you're not using TypeScript's features)
+function add(a, b) {
+  return a + b;
+}
+
+// This is BETTER TypeScript (using type safety)
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+**For This Curriculum:** We'll start with minimal TypeScript (looks like JavaScript) and gradually add types as you get comfortable.
+
 ### What is JSX?
 
 **JSX** (JavaScript XML) is a syntax extension for JavaScript that looks like HTML but lives in your JavaScript code. It's the primary way we describe user interfaces in React and React Native.
@@ -118,10 +195,12 @@ Notice how JSX lets you use `{userName}` and `{balance}` directly in the markup,
 
 ### What Happens to JSX at Compile Time?
 
-**JSX is not valid JavaScript!** Browsers can't understand it directly. It gets compiled (transformed) into regular JavaScript before your app runs.
+**JSX is not valid JavaScript!** Browsers and JavaScript engines can't understand it directly. It gets compiled (transformed) into regular JavaScript before your app runs.
+
+**And if you're using TypeScript (`.tsx` files), there's an extra compilation step!**
 
 ```typescript
-// What you write (JSX):
+// What you write (TypeScript + JSX):
 <View>
   <Text>Hello, {userName}!</Text>
 </View>
@@ -132,33 +211,63 @@ React.createElement(View, null,
 );
 ```
 
+**The Full Compilation Pipeline:**
+
+```
+Your .tsx file (TypeScript + JSX)
+        ↓
+TypeScript Compiler (tsc)
+        ↓
+JavaScript with JSX (still needs more processing)
+        ↓
+Babel (JSX Transformer)
+        ↓
+Plain JavaScript (React.createElement calls)
+        ↓
+JavaScript Engine (Browser/React Native) runs it
+```
+
+**In Reality:** Modern build tools (like Metro for React Native, or Webpack for React Web) handle both steps automatically. You write `.tsx`, press save, and it just works!
+
 **Understanding React and Browsers:**
 
 **What is React?**
 - React is a **JavaScript library** (collection of JavaScript code)
 - It's not built into browsers - you include it in your project just like any other JavaScript file
 - `React.createElement()` is just a regular JavaScript function from the React library
+- React works with both JavaScript and TypeScript (TypeScript just compiles to JavaScript first)
 
 **How do browsers support React?**
 They don't! Browsers only understand JavaScript, HTML, and CSS. Here's what actually happens:
 
-1. **You write JSX** in your code files
-2. **Babel compiles** JSX → `React.createElement()` calls (these are just regular JavaScript function calls)
-3. **React library** (JavaScript code) runs in the browser and processes those `createElement()` calls
-4. **React creates** actual DOM elements (the HTML that browsers understand)
-5. **Browser displays** the HTML/CSS
+1. **You write TypeScript + JSX** in your `.tsx` files
+2. **TypeScript compiler** strips away type annotations → produces JavaScript + JSX
+3. **Babel compiles** JSX → `React.createElement()` calls (these are just regular JavaScript function calls)
+4. **React library** (JavaScript code) runs in the browser and processes those `createElement()` calls
+5. **React creates** actual DOM elements (the HTML that browsers understand)
+6. **Browser displays** the HTML/CSS
 
 ```
-JSX → Babel → JavaScript (React.createElement) → React Library → DOM → Browser Display
+For TypeScript + React:
+.tsx → TypeScript Compiler → JavaScript + JSX → Babel → JavaScript (React.createElement) → React Library → DOM → Browser Display
+
+For JavaScript + React (simpler):
+.jsx → Babel → JavaScript (React.createElement) → React Library → DOM → Browser Display
 ```
 
-**The key point:** Browsers don't "support React" - they support JavaScript, and React IS JavaScript. When you include React in your project, you're just including more JavaScript code that happens to be really good at building UIs.
+**The key points:**
+- Browsers don't "support React" or "support TypeScript" - they only support JavaScript
+- React IS JavaScript (a library of JavaScript functions)
+- TypeScript compiles TO JavaScript (types are removed at compile time)
+- When you include React in your project, you're just including more JavaScript code that happens to be really good at building UIs
 
 **Why does this matter?**
 - JSX is just "syntactic sugar" - a nicer way to write `React.createElement()`
-- Understanding this helps debug errors (error messages sometimes reference `createElement`)
+- TypeScript is also "syntactic sugar" - it adds type checking but compiles away to regular JavaScript
+- Understanding this helps debug errors (error messages sometimes reference `createElement` or show JavaScript even though you wrote TypeScript)
 - You can mix JSX and `createElement()` if needed (though JSX is almost always better)
 - Knowing React is "just JavaScript" helps you understand that everything React does, you could do with vanilla JavaScript (it would just be much harder!)
+- **Types only exist during development** - they're completely removed from the final app (no runtime cost!)
 
 ### What are Components?
 
@@ -195,31 +304,46 @@ function Welcome() {
 - React is a **JavaScript library** for building user interfaces
 - It provides concepts: components, JSX, hooks, state management
 - React itself doesn't know about web OR mobile - it's just the core ideas
+- **Works with both JavaScript and TypeScript**
 
 **What is React Native?**
 - React Native is a **framework** that adapts React's concepts for mobile
 - Uses the same React concepts (components, JSX, hooks)
 - But creates **native mobile UI** instead of HTML
+- **Also works with both JavaScript and TypeScript** (this project uses TypeScript!)
+
+**Where Does TypeScript Fit?**
+
+TypeScript is a layer that sits on top of everything. You can use TypeScript with:
+- ✅ Plain JavaScript projects
+- ✅ React Web projects
+- ✅ React Native projects (like this one!)
+- ✅ Node.js backend projects
+- ✅ Any JavaScript code
 
 **The Technology Stacks:**
 
 ```
-WEB APP:
-Your Code (React components)
-└── React (JavaScript library)
-    └── React DOM (web adapter)
-        └── Browser (renders HTML/CSS)
-            └── User sees web page
+WEB APP (with TypeScript):
+Your Code (React components in .tsx files)
+└── TypeScript (type checking & compilation)
+    └── React (JavaScript library)
+        └── React DOM (web adapter)
+            └── Browser (renders HTML/CSS)
+                └── User sees web page
 
-MOBILE APP (with Expo):
-Your Code (React Native components)
-└── React (same core concepts!)
-    └── React Native (mobile adapter)
-        └── JavaScript Bridge
-            └── iOS (Swift/Obj-C) or Android (Kotlin/Java)
-                └── Native UI Components
-                    └── User sees native mobile UI
+MOBILE APP (with Expo + TypeScript):
+Your Code (React Native components in .tsx files)
+└── TypeScript (type checking & compilation)
+    └── React (same core concepts!)
+        └── React Native (mobile adapter)
+            └── JavaScript Bridge
+                └── iOS (Swift/Obj-C) or Android (Kotlin/Java)
+                    └── Native UI Components
+                        └── User sees native mobile UI
 ```
+
+**Key Insight:** TypeScript is not a framework or library - it's a **language** (JavaScript with types) that compiles to JavaScript. Everything else (React, React Native) runs on the compiled JavaScript output.
 
 **Breaking Down the Pieces:**
 
@@ -317,7 +441,9 @@ Same React concepts, different components!
 ## 🎯 Learning Objectives
 
 By the end of this lesson, you will:
+- ✅ Understand what TypeScript is and how it relates to JavaScript
 - ✅ Understand what JSX is and how it works
+- ✅ Know how TypeScript, JSX, React, and React Native work together
 - ✅ Write your first functional component
 - ✅ Use React Native's core components
 - ✅ Embed JavaScript expressions in JSX
@@ -330,6 +456,8 @@ By the end of this lesson, you will:
 - Section 1.4: Components in React Native
 
 ## 💻 Code Examples
+
+**Note on Code Syntax:** All examples use TypeScript (`.tsx` files). Don't worry about the TypeScript-specific syntax yet - these examples look almost identical to JavaScript. We'll introduce type annotations gradually as you progress.
 
 ### Example 1: Your First Component
 
@@ -354,6 +482,8 @@ export default HelloWorld;
 - `<View>`: Container component
 - `<Text>`: Displays text
 - `export default`: Makes component available to other files
+
+**This looks like JavaScript because:** We're not using TypeScript-specific features yet! The file is `.tsx`, but the code itself doesn't use type annotations. This is perfectly valid TypeScript.
 
 ### Example 2: Embedding JavaScript in JSX
 
@@ -530,6 +660,36 @@ function EnvelopeStatus() {
 **Explanation:**
 - Use ternary operator `? :` for conditional rendering
 - Show different UI based on data
+
+### Example 5: Adding TypeScript Type Annotations (Preview)
+
+Here's how the same component looks with TypeScript types added:
+
+```typescript
+import { View, Text } from 'react-native';
+
+// TypeScript version - with type annotations
+function EnvelopeStatus(): JSX.Element {
+  const hasMoneyLeft: boolean = true;
+  
+  return (
+    <View>
+      {hasMoneyLeft ? (
+        <Text>You have money left! ✅</Text>
+      ) : (
+        <Text>Envelope is empty ❌</Text>
+      )}
+    </View>
+  );
+}
+```
+
+**New TypeScript Features:**
+- `: JSX.Element` - tells TypeScript this function returns JSX
+- `: boolean` - tells TypeScript this variable is a boolean
+- These annotations help catch errors and provide better autocomplete
+
+**Don't worry about adding these yet!** We'll introduce type annotations gradually in later lessons. For now, just know that TypeScript lets you add these optional hints about what type of data you're working with.
 
 ## 🛠️ Hands-On Exercise
 
@@ -757,6 +917,9 @@ Try changing:
 2. What's the difference between `<View>` and `<Text>`?
 3. How do you embed JavaScript in JSX?
 4. What does `export default` do?
+5. What is TypeScript, and how does it relate to JavaScript?
+6. Why does this project use `.tsx` files instead of `.jsx` files?
+7. What happens to TypeScript code before it runs on a device?
 
 ### Common Issues
 
@@ -785,13 +948,17 @@ In the next lesson, you'll learn how to:
 4. **Conditional styling**: Show "Remaining" in red if it's below $50
 
 ### Key Takeaways
-- ✅ JSX is JavaScript that looks like HTML
-- ✅ Components are reusable UI building blocks
+- ✅ **TypeScript** is JavaScript with optional type annotations for better error catching
+- ✅ **JSX** is JavaScript (or TypeScript) syntax that looks like HTML
+- ✅ **Components** are reusable UI building blocks
 - ✅ Use `{}` to embed JavaScript in JSX
 - ✅ React Native uses `<View>` and `<Text>` instead of HTML tags
+- ✅ `.tsx` files = TypeScript + JSX (what this project uses)
+- ✅ TypeScript compiles to JavaScript before your app runs (types are removed)
 - ✅ Always export your components to use them elsewhere
+- ✅ You can write TypeScript that looks like plain JavaScript (type annotations are optional)
 
-**Great job completing Lesson 01!** You've taken your first step into React Native development. Tomorrow, we'll make these components truly reusable with props.
+**Great job completing Lesson 01!** You've taken your first step into React Native development with TypeScript. Tomorrow, we'll make these components truly reusable with props.
 
 ---
 
