@@ -4,16 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 interface EnvelopeCardProps {
   name: string;
   icon: string;
-  allocated: number;
+  amount: number;
   spent: number;
   color?: string; // Optional color prop
 }
 
-function EnvelopeCard({ name, allocated, spent, icon, color='#3b82f6' }: EnvelopeCardProps) {
+function EnvelopeCard({ name, amount, spent, icon, color='#3b82f6' }: EnvelopeCardProps) {
   // Step 2: Define envelope data
 
-  const remaining = allocated - spent;
-  const percentSpent = allocated > 0 ? (spent / allocated) * 100 : 0;
+  const remaining = amount - spent;
+  const percentSpent = amount > 0 ? (spent / amount) * 100 : 0;
 
   
   // Step 3: Return the UI
@@ -26,36 +26,11 @@ function EnvelopeCard({ name, allocated, spent, icon, color='#3b82f6' }: Envelop
       
       <View style={styles.amounts}>
         <View style={styles.amountRow}>
-          <Text style={styles.label}>Allocated:</Text>
-          <Text style={styles.amount}>${allocated.toFixed(2)}</Text>
-        </View>
-        
-        <View style={styles.amountRow}>
-          <Text style={styles.label}>Spent:</Text>
-          <Text style={styles.amount}>${spent.toFixed(2)}</Text>
-        </View>
-        
-        <View style={styles.amountRow}>
-          <Text style={styles.label}>Remaining:</Text>
-          <Text style={[
-            styles.amount, 
-            remaining < 50 && styles.lowAmount
-          ]}>
-            ${remaining.toFixed(2)}
-          </Text>
+          <Text style={styles.label}>Amount:</Text>
+          <Text style={styles.amount}>${amount.toFixed(2)}</Text>
         </View>
       </View>
-      
-      <View style={styles.progressBar}>
-        <View 
-          style={[
-            styles.progressFill, 
-            { width: `${percentSpent}%`, backgroundColor: color }
-          ]} 
-        />
-      </View>
-      <Text style={styles.percentage}>{percentSpent.toFixed(0)}% spent</Text>
-    </View>
+     </View>
   );
 }
 // StyleSheet documentation: https://reactnative.dev/docs/stylesheet
@@ -71,6 +46,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    maxWidth: '50%',
   },
   header: {
     flexDirection: 'row',
