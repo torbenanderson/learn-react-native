@@ -4,8 +4,8 @@ import EnvelopeCard from '@/components/budget/EnvelopeCard';
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.container}> 
-      <Text style={styles.title}>My Best Budget Envelopes</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>My Best Budget Envelopes 🎯</Text>
       <ScrollView>
         <EnvelopeCard />
         <EnvelopeCard />
@@ -22,8 +22,7 @@ const styles = StyleSheet.create({
     flex: 2, // flex is the amount of space the container takes up on the screen
     padding: 10, // padding is the space around the content in the container on all 4 sides
     backgroundColor: 'lightblue',
-    borderWidth: 1,    // Add this
-    borderColor: 'red'    // Add this
+    borderWidth: 1
   },
   title: {
     fontSize: 24,
