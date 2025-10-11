@@ -21,6 +21,211 @@ const [amount, setAmount] = useState(500);
 
 ### The useState Hook
 
+**What is a React Hook?**
+
+A **Hook** is a special function that lets you "hook into" React features from functional components.
+
+**Why "Hook"?** The name comes from the idea of "hooking into" React's internal features:
+
+**1. `useState` hooks into React's state system**
+- **What it is**: React's system for storing data that can change
+- **How it works**: React keeps a hidden array of values in memory for each component
+- **Use case**: Track things that change (user input, toggles, counters, form data)
+- **Example**: `const [count, setCount] = useState(0)` - stores a number that can increment
+
+**2. `useEffect` hooks into React's lifecycle** *(we'll learn in Lesson 12)*
+- **What is "lifecycle"?**: The stages a component goes through: mount → update → unmount
+  - **Mount** = Component appears on screen for first time
+  - **Update** = Component re-renders when props/state change
+  - **Unmount** = Component is removed from screen
+- **How it works**: Runs code at specific lifecycle moments
+- **Use case**: Load data when component appears, cleanup when it disappears, react to changes
+- **Example**: `useEffect(() => { fetchUserData(); }, [])` - load data when component mounts
+
+**3. `useContext` hooks into React's context system** *(we'll learn in Lesson 09)*
+- **What is "context"?**: React's system for sharing data across multiple components without passing props through every level
+- **How it works**: Creates a "global" data store that any component can access
+- **Use case**: Share theme, user info, or settings across the entire app
+- **Example**: `const theme = useContext(ThemeContext)` - access app-wide theme without props
+
+**The "Hook" Metaphor:**
+Each Hook **connects** to React's internal systems and does heavy lifting for you:
+
+- `useState` → Connects to state storage AND:
+  - Stores your value in memory
+  - Tracks changes
+  - Triggers re-renders when you update
+  - Persists value between renders
+
+- `useEffect` → Connects to lifecycle events AND:
+  - Runs code when component mounts
+  - Re-runs when dependencies change
+  - Handles cleanup when component unmounts
+  - Manages side effects (API calls, timers, subscriptions)
+
+- `useContext` → Connects to shared data AND:
+  - Retrieves global data
+  - Subscribes to updates
+  - Automatically re-renders when context changes
+  - Avoids prop drilling through every component
+
+**They're not passive "grabbers" - they're active managers!**
+
+Hooks **manage the connection** between your code and React's internal systems, doing all the complex work so you don't have to.
+
+**Do Hooks work in both React and React Native?**
+
+Yes! **Hooks are part of React's core**, so they work identically in:
+- ✅ React Web (browser apps)
+- ✅ React Native (mobile apps)
+- ✅ Any React-based platform
+
+Remember from Lesson 01:
+```
+React (core library with Hooks)
+├── React DOM → Web apps (uses same Hooks)
+└── React Native → Mobile apps (uses same Hooks)
+```
+
+The Hooks (`useState`, `useEffect`, `useContext`) are in the **React library itself**, not in React DOM or React Native. This means:
+- You import from `'react'`: `import { useState } from 'react'`
+- Same code works on web and mobile
+- You learn once, use everywhere!
+
+For now, we'll focus on `useState`. The others come later!
+
+**Architecture: How useState "Hooks Into" React**
+
+Here's what actually happens behind the scenes:
+
+```typescript
+// You write this in your component:
+const [count, setCount] = useState(0);
+
+// Here's what's happening under the hood:
+```
+
+```
+1. Component First Renders
+   Your Code:              const [count, setCount] = useState(0);
+         ↓
+   useState Hook:          Calls React's internal state management
+         ↓
+   React Internal:         Creates state slot → stores 0
+         ↓
+   Returns to you:         [0, setterFunction]
+         ↓
+   Your component:         count = 0, setCount = function
+         ↓
+   Render UI:              <Text>Count: 0</Text>
+
+2. User Clicks Button
+   Your Code:              setCount(count + 1)  // setCount(1)
+         ↓
+   Setter Function:        Tells React "state changed to 1"
+         ↓
+   React Internal:         Updates state slot → now stores 1
+         ↓
+   React:                  "State changed! Re-render this component"
+         ↓
+   Component Re-runs:      const [count, setCount] = useState(0);
+         ↓
+   useState Hook:          Retrieves from state slot → returns 1 (not 0!)
+         ↓
+   Returns to you:         [1, setterFunction]
+         ↓
+   Your component:         count = 1, setCount = function
+         ↓
+   Render UI:              <Text>Count: 1</Text>  ← User sees update!
+```
+
+**The "Hook" Part:**
+- `useState` **hooks into** React's internal state storage system
+- React maintains a hidden array of state values for each component
+- When you call `useState`, it grabs the next slot in that array
+- When you call the setter, it **hooks back into** React to trigger a re-render
+
+**Wait - What "storage" are we talking about?**
+
+**Not a database or file!** This is **JavaScript memory** (RAM) while your app is running.
+
+**Where state is actually stored:**
+```
+Your App Running in Memory:
+├── JavaScript Engine (running your code)
+├── React Library (JavaScript code)
+│   └── Internal State Array:
+│       ├── Component #1's states: [0, "Torben", true]
+│       ├── Component #2's states: [100, "Groceries"]
+│       └── Component #3's states: [500]
+└── Native UI (the actual screen)
+```
+
+**Concrete example:**
+```typescript
+function MyComponent() {
+  const [count, setCount] = useState(0);       // React stores: slot 0 = 0
+  const [name, setName] = useState("Torben");  // React stores: slot 1 = "Torben"
+  const [isActive, setIsActive] = useState(true); // React stores: slot 2 = true
+  
+  // React internally has: [0, "Torben", true]
+}
+```
+
+**What happens on re-render:**
+- Your component function runs again
+- React says "Oh, this component has 3 state values stored"
+- Each `useState` call retrieves from the next slot: slot 0, slot 1, slot 2
+- **This is why order matters!** Hooks must be called in the same order every time
+
+**When state is lost:**
+- ❌ When you close the app (memory cleared)
+- ❌ When you refresh the app (app restarts)
+- ✅ State ONLY lives while app is running in memory
+
+**In Lesson 10**, we'll learn AsyncStorage to save state permanently to the device's disk!
+
+**Why this matters:**
+- The state value persists between renders (stored in React's internal system)
+- `useState(0)` only sets initial value on first render
+- On re-renders, useState retrieves the current value from React's storage
+- This is why your component "remembers" state even though the function re-runs!
+
+**Key Rules of Hooks:**
+- ✅ Always start with the word "use" (`useState`, `useEffect`, `useThemeColor`)
+- ✅ Only call Hooks at the top level of your component (not inside loops, conditions, or nested functions)
+- ✅ Only call Hooks from React functional components or custom Hooks
+
+**Before Hooks (old way - class components):**
+```typescript
+// OLD WAY - Class component (we don't use this anymore)
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+  }
+  
+  render() {
+    return <Text>{this.state.count}</Text>;
+  }
+}
+```
+
+**With Hooks (modern way - functional components):**
+```typescript
+// MODERN WAY - Functional component with Hook (much simpler!)
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <Text>{count}</Text>;
+}
+```
+
+Hooks made functional components as powerful as classes, but much simpler!
+
+---
+
+**Now, let's use the useState Hook:**
+
 `useState` is a React Hook that lets you add state to functional components.
 
 ```typescript
@@ -39,10 +244,91 @@ function Counter() {
 }
 ```
 
+**Understanding the Syntax: `const [count, setCount] = useState(0);`**
+
+This looks confusing at first! Let's break it down:
+
+**1. What useState actually returns:**
+```typescript
+// useState returns an ARRAY with 2 items
+const result = useState(0);
+// result = [0, function]
+//          ↑   ↑
+//       value  setter function
+```
+
+**2. Array destructuring (JavaScript feature from Lesson 02):**
+```typescript
+// Without destructuring - access by index
+const result = useState(0);
+const count = result[0];      // Get first item (the value)
+const setCount = result[1];   // Get second item (the function)
+
+// With destructuring - extract both at once
+const [count, setCount] = useState(0);
+// Same result, much cleaner!
+```
+
+**3. Why square brackets `[]`?**
+- Square brackets = **array destructuring** (extracting from an array)
+- Curly braces `{}` = **object destructuring** (extracting from an object - Lesson 02)
+
+```typescript
+// Array destructuring (useState)
+const [first, second] = [10, 20];
+// first = 10, second = 20
+
+// Object destructuring (props)
+const { name, age } = { name: "Torben", age: 30 };
+// name = "Torben", age = 30
+```
+
+**4. You can name the variables anything:**
+```typescript
+const [count, setCount] = useState(0);        // Common convention
+const [x, setX] = useState(0);                 // Works, but unclear
+const [elephantCount, updateElephants] = useState(0);  // Works!
+```
+
+**Convention:** Name them `[value, setValue]` where "value" describes what you're storing.
+
+**Complete breakdown:**
+```typescript
+const [count, setCount] = useState(0);
+  │     │       │           │        │
+  │     │       │           │        └─ The actual initial value (number 0)
+  │     │       │           └─ Function from 'react' library
+  │     │       └─ Variable name for setter (we pick this name)
+  │     └─ Variable name for the value (we pick this name)
+  └─ const = these variable names won't be reassigned
+```
+
+**Important: Variable NAME vs VALUE:**
+- `count` = the **variable name** (like a box's label - stays the same)
+- `0` = the **value** inside that box (can change to 1, 5, 100, etc.)
+- When you call `setCount(5)`, the variable name `count` stays the same, but it now holds `5` instead of `0`
+
 **Anatomy of useState:**
-- `count` → Current value
-- `setCount` → Function to update the value
-- `useState(0)` → Initial value is 0
+- `count` → **Variable name** we choose (stores the current value)
+- `setCount` → **Variable name** for the setter function (we choose this too)
+- `useState(0)` → Returns array: [currentValue, setterFunction]
+- `0` → The **actual initial value** stored in the `count` variable
+
+**The key distinction:**
+- `count` is the **variable name** (we pick it)
+- `0` is the **actual value** stored in that variable (initially)
+- Later, `count` might hold `1`, `2`, `100`, etc. as the value changes
+
+```typescript
+const [count, setCount] = useState(0);  
+// count variable holds value: 0
+
+setCount(5);  
+// Now count variable holds value: 5
+
+setCount(100);  
+// Now count variable holds value: 100
+```
 
 ### How State Updates Work
 
