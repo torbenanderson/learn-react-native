@@ -72,6 +72,32 @@ Keys help React identify which items have changed, been added, or removed. This 
 ))}
 ```
 
+**How Keys Enable Efficient Updates:**
+
+Keys let React update **individual items** instead of recreating the entire list:
+
+```typescript
+// User adds "Orange" to the middle
+const oldFruits = ["Apple", "Banana", "Grape"];
+const newFruits = ["Apple", "Orange", "Banana", "Grape"];
+
+// Without keys - React recreates ALL components
+<Text>Apple</Text>     // ❌ Recreated (unnecessary)
+<Text>Orange</Text>    // ✅ New
+<Text>Banana</Text>    // ❌ Recreated (unnecessary) 
+<Text>Grape</Text>     // ❌ Recreated (unnecessary)
+
+// With keys - React only updates what changed
+<Text key="Apple">Apple</Text>     // ✅ Kept (no change)
+<Text key="Orange">Orange</Text>   // ✅ Added (new)
+<Text key="Banana">Banana</Text>   // ✅ Kept (no change)
+<Text key="Grape">Grape</Text>     // ✅ Kept (no change)
+```
+
+**Real-world impact:** With 100 transactions, adding 1 new transaction:
+- **Without keys**: Recreates all 100 components (slow, flashy)
+- **With keys**: Only creates 1 new component (smooth, fast)
+
 **Key Rules:**
 1. Keys must be unique among siblings
 2. Keys should be stable (don't change between renders)
@@ -91,6 +117,35 @@ import { FlatList } from 'react-native';
   keyExtractor={item => item.id}
 />
 ```
+
+**What "Only Renders Visible Items" Means:**
+
+When you use `.map()`, React creates ALL components at once, even if they're not visible:
+
+```typescript
+// ❌ Creates 1000 components in memory
+const transactions = [/* 1000 transactions */];
+return (
+  <ScrollView>
+    {transactions.map(transaction => (
+      <TransactionRow key={transaction.id} transaction={transaction} />
+    ))}
+  </ScrollView>
+);
+```
+
+`FlatList` uses **virtualization** - it only creates components for items you can actually see:
+
+```typescript
+// ✅ Only creates ~5 components in memory
+<FlatList
+  data={transactions}
+  renderItem={({ item }) => <TransactionRow transaction={item} />}
+  keyExtractor={item => item.id}
+/>
+```
+
+**Think of it like a window:** You only see what's in the window frame, not the entire long scroll!
 
 **When to use what:**
 - **Few items** (< 20): Use `.map()`

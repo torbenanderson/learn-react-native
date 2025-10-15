@@ -2,17 +2,14 @@ import { ScrollView, StyleSheet, Text} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EnvelopeCard from '@/components/budget/EnvelopeCard';
 import MoneyCard from '@/components/budget/MoneyCard';
-import {Counter, NameInput } from '@/components/budget/Counter';
 import { AllocateFunds } from '@/components/budget/AllocateFunds';
-
+import EnvelopeList from '@/components/ui/EnvelopeList';
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
-      
       <AllocateFunds />
-        <NameInput />
         <Text style={styles.title}>Transactions</Text>
         <MoneyCard
           name="Groceries"
