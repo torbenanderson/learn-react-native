@@ -3,7 +3,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import EnvelopeCard from '@/components/budget/EnvelopeCard';
 import MoneyCard from '@/components/budget/MoneyCard';
 import { AllocateFunds } from '@/components/budget/AllocateFunds';
-import EnvelopeList from '@/components/ui/EnvelopeList';
 
 export default function HomeScreen() {
   return (

@@ -10,7 +10,7 @@ function AllocateFunds() {
   const [unallocatedFunds, setUnallocatedFunds] = useState(1000);
   
   // State for created envelopes (with unique IDs to prevent duplicate key warnings)
-  const [envelopes, setEnvelopes] = useState<Array<{id: string, name: string, amount: number}>>([]);
+  const [envelopes, setEnvelopes] = useState<{id: string, name: string, amount: number}[]>([]);
   
   const handleAllocate = () => {
     const amount = parseFloat(allocatedAmount);
