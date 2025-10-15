@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { Transaction } from '@/types/budget';
 
 interface TransactionRowProps {
