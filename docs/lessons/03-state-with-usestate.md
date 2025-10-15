@@ -811,6 +811,66 @@ const styles = StyleSheet.create({
 export default AllocateFunds;
 ```
 
+**Understanding the TypeScript Syntax: `useState<Array<{name: string, amount: number}>>([])`**
+
+This looks complex! Let's break it down:
+
+```typescript
+useState<Array<{name: string, amount: number}>>([])
+   │      │                                      │
+   │      │                                      └─ Initial value (empty array)
+   │      └─ TypeScript Type Parameter (what type of data this state will hold)
+   └─ The useState function
+```
+
+**The Pieces:**
+
+1. **`useState`** - The Hook function (we know this!)
+
+2. **`<Array<{name: string, amount: number}>>`** - TypeScript Generic Type
+   - The `< >` brackets tell TypeScript what type of data to expect
+   - This state will hold an **Array** of objects
+   - Each object has: `{ name: string, amount: number }`
+
+3. **`[]`** - Initial value (empty array)
+
+**Why use this syntax?**
+
+Without the type, TypeScript can't help you:
+```typescript
+const [envelopes, setEnvelopes] = useState([]);
+// TypeScript: "I don't know what's in this array! 🤷"
+// Later: envelopes.map(e => e.name)  
+// TypeScript: "Does 'e' have a 'name' property? I don't know!"
+```
+
+With the type, TypeScript knows exactly what to expect:
+```typescript
+const [envelopes, setEnvelopes] = useState<Array<{name: string, amount: number}>>([]);
+// TypeScript: "This is an array of objects with 'name' (string) and 'amount' (number)"
+// Later: envelopes.map(e => e.name)
+// TypeScript: "✅ Yes, 'e' has a 'name' property! Autocomplete: e.name, e.amount"
+```
+
+**Simpler Alternative (same thing):**
+```typescript
+// Using type alias (cleaner)
+type Envelope = { name: string; amount: number };
+const [envelopes, setEnvelopes] = useState<Envelope[]>([]);
+
+// Or using interface (from Lesson 02)
+interface Envelope {
+  name: string;
+  amount: number;
+}
+const [envelopes, setEnvelopes] = useState<Envelope[]>([]);
+```
+
+**The pattern:**
+- `useState<TYPE>(initialValue)`
+- Simple types: `useState<number>(0)`, `useState<string>("")`
+- Complex types: `useState<Array<Object>>([])`
+
 **Step 2: Add to Your App**
 
 Update `/Users/torbenanderson/development/projects/learn-react-native/app/(tabs)/index.tsx`:

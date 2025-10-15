@@ -10,11 +10,9 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
-        <Counter />
-        <NameInput />
-        <ScrollView style={styles.container}>
+      
       <AllocateFunds />
-    </ScrollView>
+        <NameInput />
         <Text style={styles.title}>Transactions</Text>
         <MoneyCard
           name="Groceries"
@@ -75,6 +73,7 @@ export default function HomeScreen() {
     
   );
 }
+
 
 // StyleSheet documentation: https://reactnative.dev/docs/stylesheet
 const styles = StyleSheet.create({

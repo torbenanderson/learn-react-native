@@ -290,10 +290,10 @@ Connect with other learners. Share progress. Ask questions.
 After each phase, verify you can:
 
 **Phase 1 Checklist:**
-- [ ] Explain what JSX is and how it works
-- [ ] Create functional components
-- [ ] Pass and use props
-- [ ] Manage component state with useState
+- [x] Explain what JSX is and how it works ✅
+- [x] Create functional components ✅
+- [x] Pass and use props ✅
+- [x] Manage component state with useState ✅
 - [ ] Render lists with .map()
 - [ ] Style components
 - [ ] Navigate between screens

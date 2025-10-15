@@ -9,8 +9,8 @@ function AllocateFunds() {
   // State for unallocated funds
   const [unallocatedFunds, setUnallocatedFunds] = useState(1000);
   
-  // State for created envelopes
-  const [envelopes, setEnvelopes] = useState<{name: string, amount: number}[]>([]);
+  // State for created envelopes (with unique IDs to prevent duplicate key warnings)
+  const [envelopes, setEnvelopes] = useState<Array<{id: string, name: string, amount: number}>>([]);
   
   const handleAllocate = () => {
     const amount = parseFloat(allocatedAmount);
@@ -21,7 +21,7 @@ function AllocateFunds() {
       return;
     }
     
-    if (Number.isNaN(amount) || amount <= 0) {
+    if (isNaN(amount) || amount <= 0) {
       alert("Please enter a valid amount");
       return;
     }
@@ -34,8 +34,13 @@ function AllocateFunds() {
     // Update unallocated funds
     setUnallocatedFunds(unallocatedFunds - amount);
     
-    // Add new envelope
-    setEnvelopes([...envelopes, { name: envelopeName, amount }]);
+    // Add new envelope with unique ID
+    const newEnvelope = {
+      id: `${Date.now()}-${Math.random()}`, // Unique ID: timestamp + random number
+      name: envelopeName,
+      amount
+    };
+    setEnvelopes([...envelopes, newEnvelope]);
     
     // Reset form
     setEnvelopeName("");
@@ -84,7 +89,7 @@ function AllocateFunds() {
         <View style={styles.envelopesList}>
           <Text style={styles.listTitle}>Allocated Envelopes</Text>
           {envelopes.map((envelope) => (
-            <View key={envelope.name} style={styles.envelopeItem}>
+            <View key={envelope.id} style={styles.envelopeItem}>
               <Text style={styles.envelopeName}>{envelope.name}</Text>
               <Text style={styles.envelopeAmount}>
                 ${envelope.amount.toFixed(2)}
