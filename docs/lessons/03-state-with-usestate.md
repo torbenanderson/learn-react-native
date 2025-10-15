@@ -344,6 +344,116 @@ const [name, setName] = useState("Torben");
 setName("Alice"); // Component re-renders with "Alice"
 ```
 
+**Visual UI Example - See the Update in Action:**
+
+Here's a complete example showing how the UI changes when state updates:
+
+```typescript
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { useState } from 'react';
+
+function BalanceDisplay() {
+  const [balance, setBalance] = useState(1000);
+  
+  return (
+    <View style={styles.container}>
+      {/* Displays current state value - updates automatically when state changes */}
+      <Text style={styles.balance}>Balance: ${balance}</Text>
+      
+      {/* Buttons that update state using embedded arrow functions */}
+      <Button 
+        title="Add $50" 
+        onPress={() => setBalance(balance + 50)}
+      />
+      <Button 
+        title="Spend $25" 
+        onPress={() => setBalance(balance - 25)}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 20 },
+  balance: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+});
+```
+
+**Code Breakdown:**
+
+**`${balance}` - Template Literal:**
+- JavaScript syntax for embedding variables in strings
+- If `balance = 1000`, this renders as: `"Balance: $1000"`
+- When balance changes, this automatically re-renders with the new value
+
+**`() => setBalance(balance + 50)` - Arrow Function:**
+- `() =>` is an **embedded/inline function** - defined right where it's used
+- JavaScript ES6 shorthand for creating functions
+
+**Two ways to write functions for event handlers:**
+
+```typescript
+// Option 1: Embedded arrow function (for simple one-liners)
+<Button onPress={() => setBalance(balance + 50)} />
+
+// Option 2: Separate named function (for complex logic)
+const handleAdd = () => {
+  setBalance(balance + 50);
+};
+<Button onPress={handleAdd} />
+
+// Old way (verbose):
+<Button onPress={function() { setBalance(balance + 50); }} />
+```
+
+**When to use which:**
+- ✅ Embedded arrow: Simple one-line actions (like this example)
+- ✅ Separate function: Complex logic, multiple lines, reused handlers
+
+**What happens step-by-step:**
+
+```
+Initial Render:
+├── balance = 1000
+├── UI shows: "Balance: $1000"
+└── User sees: Balance: $1000
+
+User Taps "Add $50" Button:
+├── onPress fires → setBalance(1000 + 50)
+├── React updates: balance → 1050
+├── React re-renders component
+├── UI updates: "Balance: $1050"
+└── User sees: Balance: $1050  ← UI automatically updated!
+
+User Taps "Spend $25" Button:
+├── onPress fires → setBalance(1050 - 25)
+├── React updates: balance → 1025
+├── React re-renders component
+├── UI updates: "Balance: $1025"
+└── User sees: Balance: $1025  ← UI updated again!
+```
+
+**The Magic:** You just change the state value with `setBalance()`, and React automatically updates the UI! You don't manually update the `<Text>` component - React handles it for you.
+
+**Bonus:** If you use the same state value in **multiple places**, they ALL update automatically:
+
+```typescript
+function BalanceDisplay() {
+  const [balance, setBalance] = useState(1000);
+  
+  return (
+    <View>
+      <Text>Balance: ${balance}</Text>           {/* Updates */}
+      <Text>Current: ${balance}</Text>           {/* Updates */}
+      <Text>You have ${balance} dollars</Text>   {/* Updates */}
+      <Button onPress={() => setBalance(balance + 50)} />
+    </View>
+  );
+}
+// When you tap the button, ALL THREE Text components update!
+// One state change → Multiple UI updates
+```
+
 ### Multiple State Variables
 
 You can use multiple `useState` calls:

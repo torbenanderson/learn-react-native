@@ -5,16 +5,11 @@ interface EnvelopeCardProps {
   name: string;
   icon: string;
   amount: number;
-  spent: number;
   color?: string; // Optional color prop
 }
 
-function EnvelopeCard({ name, amount, spent, icon, color='#3b82f6' }: EnvelopeCardProps) {
+function EnvelopeCard({ name, amount, icon, color='#3b82f6' }: EnvelopeCardProps) {
   // Step 2: Define envelope data
-
-  const remaining = amount - spent;
-  const percentSpent = amount > 0 ? (spent / amount) * 100 : 0;
-
   
   // Step 3: Return the UI
   return (
