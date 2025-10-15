@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { Transaction } from '@/types/budget';
+import { StyleSheet, Text, View } from 'react-native';
+import type { Transaction } from '@/types/budget';
 
 interface TransactionRowProps {
   transaction: Transaction;

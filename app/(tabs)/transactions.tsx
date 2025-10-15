@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import TransactionRow from '@/components/budget/TransactionRow';
-import { Transaction } from '@/types/budget';
+import type { Transaction } from '@/types/budget';
 
 export default function TransactionsScreen() {
   // Sample data (we'll replace with real data in Lesson 10)
@@ -14,6 +14,8 @@ export default function TransactionsScreen() {
       amount: -85.43,
       date: '2025-10-09',
       type: 'expense',
+      createdAt: '2025-10-09',
+      updatedAt: '2025-10-09',
     },
     {
       id: '2',
@@ -23,6 +25,8 @@ export default function TransactionsScreen() {
       amount: -45.00,
       date: '2025-10-09',
       type: 'expense',
+      createdAt: '2025-10-09',
+      updatedAt: '2025-10-09',
     },
     {
       id: '3',
@@ -32,6 +36,8 @@ export default function TransactionsScreen() {
       amount: -32.50,
       date: '2025-10-08',
       type: 'expense',
+      createdAt: '2025-10-08',
+      updatedAt: '2025-10-08',
     },
     {
       id: '4',
@@ -41,6 +47,8 @@ export default function TransactionsScreen() {
       amount: -52.18,
       date: '2025-10-07',
       type: 'expense',
+      createdAt: '2025-10-07',
+      updatedAt: '2025-10-07',
     },
     {
       id: '5',
@@ -50,6 +58,8 @@ export default function TransactionsScreen() {
       amount: 2500.00,
       date: '2025-10-01',
       type: 'income',
+      createdAt: '2025-10-01',
+      updatedAt: '2025-10-01',
     },
   ]);
   
