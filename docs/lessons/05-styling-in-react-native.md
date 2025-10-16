@@ -30,6 +30,76 @@ const styles = StyleSheet.create({
 - Limited CSS properties (only what mobile supports)
 - No cascading (styles don't inherit like CSS)
 
+### Understanding "No Cascading"
+
+In CSS, styles "cascade" down from parent to child elements:
+
+```css
+/* Parent element */
+.container {
+  font-size: 16px;
+  color: blue;
+  padding: 20px;
+}
+
+/* Child automatically inherits parent styles */
+.text {
+  /* This text will be 16px, blue, and have 20px padding from parent */
+  font-weight: bold; /* Only adds this property */
+}
+```
+
+```html
+<div class="container">
+  <p class="text">This text inherits size, color, and padding from parent</p>
+</div>
+```
+
+In React Native, **every component must explicitly define its own styles**:
+
+```typescript
+// Parent component
+<View style={styles.container}>
+  <Text style={styles.text}>This text needs ALL its styles defined</Text>
+</View>
+
+const styles = StyleSheet.create({
+  container: {
+    fontSize: 16,        // ❌ Child won't inherit this
+    color: 'blue',       // ❌ Child won't inherit this  
+    padding: 20,         // ❌ Child won't inherit this
+  },
+  text: {
+    fontSize: 16,        // ✅ Must explicitly define
+    color: 'blue',       // ✅ Must explicitly define
+    fontWeight: 'bold',  // ✅ Must explicitly define
+    // padding: 20,      // ❌ Won't inherit from parent
+  },
+});
+```
+
+**Why No Cascading?**
+- **Performance**: Mobile devices need to render quickly. Cascading requires checking parent styles, which adds overhead.
+- **Explicit Control**: You always know exactly what styles are applied where.
+- **Predictability**: No surprise styling from distant parent components.
+
+**Practical Example:**
+```typescript
+// ❌ This WON'T work - text won't be blue
+<View style={{ color: 'blue' }}>
+  <Text>This text is NOT blue</Text>
+</View>
+
+// ✅ This WILL work - text is explicitly blue
+<View>
+  <Text style={{ color: 'blue' }}>This text IS blue</Text>
+</View>
+```
+
+**The Trade-off:**
+- **CSS**: Less code, but harder to debug (where did this style come from?)
+- **React Native**: More code, but complete control and clarity
+
 ### StyleSheet.create()
 
 Always use `StyleSheet.create()` to define styles:
@@ -53,7 +123,11 @@ const styles = StyleSheet.create({
 
 ### Flexbox Layout
 
-React Native uses Flexbox for layouts (default behavior is like `display: flex`):
+React Native uses Flexbox for layouts (default behavior is like `display: flex`). 
+
+**What is Flexbox?** It's a layout system that arranges items in flexible containers. Think of it like **arranging boxes in a room** - you can tell them to line up horizontally, vertically, space them out, or center them.
+
+**🎮 Interactive Learning**: Try the [Flexbox Playground](https://flexbox.help/) to see how flexbox works visually!
 
 ```typescript
 // Horizontal layout
@@ -138,6 +212,131 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Dark Mode Support
+
+**Why build dark mode from the start?** It's much easier to implement dark mode from the beginning than to retrofit it later. Users expect it, and it's a key differentiator for modern apps.
+
+#### Method 1: Design Tokens with Theme Support
+
+Create theme-aware design tokens:
+
+```typescript
+// constants/Design.ts
+export const lightTheme = {
+  background: '#f3f4f6',
+  surface: '#ffffff',
+  textPrimary: '#1f2937',
+  textSecondary: '#6b7280',
+  primary: '#3b82f6',
+  border: '#e5e7eb',
+};
+
+export const darkTheme = {
+  background: '#111827',
+  surface: '#1f2937',
+  textPrimary: '#f9fafb',
+  textSecondary: '#d1d5db',
+  primary: '#60a5fa',
+  border: '#374151',
+};
+
+// Usage in components
+import { lightTheme, darkTheme } from '@/constants/Design';
+
+function MyComponent() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  
+  return (
+    <View style={styles(theme).container}>
+      <Text style={styles(theme).text}>Themed text</Text>
+    </View>
+  );
+}
+
+const styles = (theme) => StyleSheet.create({
+  container: {
+    backgroundColor: theme.background,  // Automatically adapts
+    borderColor: theme.border,
+  },
+  text: {
+    color: theme.textPrimary,
+  },
+});
+```
+
+#### Method 2: Using React Native's Built-in Dark Mode
+
+```typescript
+import { useColorScheme } from 'react-native';
+
+function MyComponent() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  
+  return (
+    <View style={[
+      styles.container,
+      isDark && styles.darkContainer
+    ]}>
+      <Text style={[
+        styles.text,
+        isDark && styles.darkText
+      ]}>
+        Hello World
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#ffffff',
+  },
+  darkContainer: {
+    backgroundColor: '#1f2937',
+  },
+  text: {
+    color: '#1f2937',
+  },
+  darkText: {
+    color: '#f9fafb',
+  },
+});
+```
+
+#### Method 3: Context-Based Theme (Advanced)
+
+```typescript
+// contexts/ThemeContext.tsx
+const ThemeContext = createContext();
+
+export function ThemeProvider({ children }) {
+  const [isDark, setIsDark] = useState(false);
+  
+  const theme = isDark ? darkTheme : lightTheme;
+  
+  return (
+    <ThemeContext.Provider value={{ theme, isDark, setIsDark }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+// Usage
+function MyComponent() {
+  const { theme } = useContext(ThemeContext);
+  
+  return (
+    <View style={{ backgroundColor: theme.background }}>
+      <Text style={{ color: theme.textPrimary }}>Themed text</Text>
+    </View>
+  );
+}
+```
+
+**💡 Pro Tip**: Start with Method 1 (design tokens) - it's the most maintainable approach and scales well as your app grows.
+
 ### Style Arrays
 
 Combine multiple styles with arrays (later styles override earlier ones):
@@ -145,6 +344,132 @@ Combine multiple styles with arrays (later styles override earlier ones):
 ```typescript
 <View style={[styles.button, styles.primaryButton, isDisabled && styles.disabledButton]} />
 ```
+
+#### How Style Arrays Work
+
+This uses **array syntax** to combine multiple styles. Here's the breakdown:
+
+**1. Array of Styles:**
+```typescript
+[styles.button, styles.primaryButton, isDisabled && styles.disabledButton]
+//  ↑           ↑                    ↑
+//  base        primary              conditional
+```
+
+**2. Left-to-Right Priority:**
+Styles are applied **left to right**, with later styles **overriding** earlier ones:
+
+```typescript
+const styles = StyleSheet.create({
+  button: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: 'gray',  // ← Will be overridden
+  },
+  primaryButton: {
+    backgroundColor: 'blue',  // ← Overrides gray
+    fontWeight: 'bold',
+  },
+  disabledButton: {
+    backgroundColor: 'lightgray',  // ← Overrides blue if disabled
+    opacity: 0.5,
+  },
+});
+```
+
+**3. Conditional Styling:**
+```typescript
+isDisabled && styles.disabledButton
+//  ↑              ↑
+//  condition      style to apply
+```
+
+- If `isDisabled` is `true` → applies `styles.disabledButton`
+- If `isDisabled` is `false` → applies `false` (which React Native ignores)
+
+**4. Final Result:**
+
+*When `isDisabled = false`:*
+```typescript
+// Final computed style:
+{
+  padding: 12,           // from button
+  borderRadius: 8,       // from button
+  backgroundColor: 'blue', // from primaryButton (overrides button)
+  fontWeight: 'bold',    // from primaryButton
+  // disabledButton not applied
+}
+```
+
+*When `isDisabled = true`:*
+```typescript
+// Final computed style:
+{
+  padding: 12,              // from button
+  borderRadius: 8,          // from button
+  backgroundColor: 'lightgray', // from disabledButton (overrides primaryButton)
+  fontWeight: 'bold',       // from primaryButton
+  opacity: 0.5,             // from disabledButton
+}
+```
+
+**Why Use Arrays?**
+- **Performance**: StyleSheet.create() optimizes styles
+- **Readability**: Clear separation of concerns
+- **Reusability**: Mix and match base styles
+- **Maintainability**: Easy to add/remove styles
+
+#### Practical Use Case: Reusable Button Component
+
+This pattern is perfect for creating flexible components. Instead of creating separate styles for every combination:
+
+```typescript
+// ❌ Messy: Separate styles for every combination
+smallPrimaryButton: { padding: 8, backgroundColor: 'blue' },
+smallSecondaryButton: { padding: 8, backgroundColor: 'gray' },
+mediumPrimaryButton: { padding: 12, backgroundColor: 'blue' },
+// ... many more combinations
+
+// ✅ Clean: Compose styles as needed
+const styles = StyleSheet.create({
+  button: { padding: 12, borderRadius: 8 },           // Base
+  small: { padding: 8 },                             // Size variant
+  primary: { backgroundColor: 'blue' },              // Type variant
+  disabled: { opacity: 0.5 },                        // State variant
+});
+
+// One flexible component
+<Button style={[styles.button, styles.small, styles.primary, isDisabled && styles.disabled]} />
+```
+
+**Benefits:**
+- **Composition**: Mix and match base styles
+- **Maintainable**: Change base styles once, affects all buttons
+- **Flexible**: Easy to add new sizes/types without duplicating code
+
+#### Visual Analogy: Stacking Transparent Sheets
+
+Think of style arrays like **stacking transparent sheets** - each layer adds to the previous ones, with later layers overriding earlier ones:
+
+```
+┌─────────────────┐
+│ styles.disabled │ ← Top layer (overrides everything below)
+│ opacity: 0.5    │
+│ bg: gray        │
+├─────────────────┤
+│ styles.primary  │ ← Middle layer
+│ bg: blue        │
+├─────────────────┤
+│ styles.small    │ ← Middle layer  
+│ padding: 8      │
+├─────────────────┤
+│ styles.button   │ ← Bottom layer
+│ padding: 12     │
+│ borderRadius: 8 │
+└─────────────────┘
+```
+
+Final result: `{ padding: 8, borderRadius: 8, backgroundColor: 'gray', opacity: 0.5 }`
 
 ## 🎯 Learning Objectives
 

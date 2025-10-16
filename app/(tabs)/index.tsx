@@ -3,12 +3,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import EnvelopeCard from '@/components/budget/EnvelopeCard';
 import MoneyCard from '@/components/budget/MoneyCard';
 import { AllocateFunds } from '@/components/budget/AllocateFunds';
+import BudgetSummary from '@/components/budget/BudgetSummary';
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
+      <BudgetSummary 
+        totalIncome={3000}
+        totalAllocated={2500}
+        totalSpent={1850}
+      />
       <AllocateFunds />
+     
         <Text style={styles.title}>Transactions</Text>
         <MoneyCard
           name="Groceries"
