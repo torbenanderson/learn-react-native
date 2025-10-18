@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 // Define the props interface
 interface EnvelopeCardProps {
+  id: string; // Add id prop for navigation
   name: string;
   icon: string;
   allocated: number;
@@ -9,16 +11,31 @@ interface EnvelopeCardProps {
   color?: string; // Optional color prop
 }
 
-function EnvelopeCard({ name, allocated, spent, icon, color='#3b82f6' }: EnvelopeCardProps) {
-  // Step 2: Define envelope data
-
+function EnvelopeCard({ id, name, allocated, spent, icon, color='#3b82f6' }: EnvelopeCardProps) {
+  const router = useRouter();
+  
   const remaining = allocated - spent;
   const percentSpent = allocated > 0 ? (spent / allocated) * 100 : 0;
 
+  const handlePress = () => {
+    router.push({
+      pathname: '/envelope/[id]',
+      params: { 
+        id, 
+        name, 
+        allocated: allocated.toString(), 
+        spent: spent.toString() 
+      }
+    });
+  };
   
   // Step 3: Return the UI
   return (
-    <View style={[styles.card, { borderLeftColor: color }]}>
+    <TouchableOpacity 
+      style={[styles.card, { borderLeftColor: color }]}
+      onPress={handlePress}
+      activeOpacity={0.7}
+    >
       <View style={styles.header}>
         <Text style={styles.icon}>{icon}</Text>
         <Text style={styles.name}>{name}</Text>
@@ -55,7 +72,7 @@ function EnvelopeCard({ name, allocated, spent, icon, color='#3b82f6' }: Envelop
         />
       </View>
       <Text style={styles.percentage}>{percentSpent.toFixed(0)}% spent</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 // StyleSheet documentation: https://reactnative.dev/docs/stylesheet

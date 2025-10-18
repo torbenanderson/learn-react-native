@@ -1,12 +1,16 @@
-import { ScrollView, StyleSheet, Text} from 'react-native';
+import { View, ScrollView, StyleSheet, Text, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EnvelopeCard from '@/components/budget/EnvelopeCard';
 import MoneyCard from '@/components/budget/MoneyCard';
 import { AllocateFunds } from '@/components/budget/AllocateFunds';
 import BudgetSummary from '@/components/budget/BudgetSummary';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
+  
   return (
+    
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
       <BudgetSummary 
@@ -14,6 +18,13 @@ export default function HomeScreen() {
         totalAllocated={2500}
         totalSpent={1850}
       />
+      <View>
+      <Text>Home Screen</Text>
+      <Button 
+        title="Go to Settings" 
+        onPress={() => router.push('/settings')}
+      />
+    </View>
       <AllocateFunds />
      
         <Text style={styles.title}>Transactions</Text>
@@ -33,6 +44,7 @@ export default function HomeScreen() {
       
       {/* Multiple envelope cards with different data */}
       <EnvelopeCard
+        id="1"
         name="Groceries"
         icon="🛒"
         allocated={500}
@@ -41,6 +53,7 @@ export default function HomeScreen() {
       />
       
       <EnvelopeCard
+        id="2"
         name="Rent"
         icon="🏠"
         allocated={1200}
@@ -49,6 +62,7 @@ export default function HomeScreen() {
       />
       
       <EnvelopeCard
+        id="3"
         name="Gas"
         icon="⛽"
         allocated={150}
@@ -57,6 +71,7 @@ export default function HomeScreen() {
       />
       
       <EnvelopeCard
+        id="4"
         name="Entertainment"
         icon="🎬"
         allocated={200}
@@ -65,6 +80,7 @@ export default function HomeScreen() {
       />
       
       <EnvelopeCard
+        id="5"
         name="Dining Out"
         icon="🍔"
         allocated={100}
@@ -90,5 +106,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#1f2937',
+  },
+  note: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    marginTop: 8,
   },
 });
