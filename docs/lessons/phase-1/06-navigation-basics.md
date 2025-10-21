@@ -32,6 +32,89 @@ app/
     transactions.tsx    → Tab transactions
 ```
 
+### Understanding Special Folder Names
+
+**Parentheses `(folder)` - Route Groups:**
+Folders wrapped in parentheses create **route groups** that don't affect the URL structure but organize your navigation:
+
+```
+app/
+  (tabs)/              → Route group (doesn't appear in URL)
+    _layout.tsx        → Tab navigator
+    index.tsx          → / (not /tabs)
+    settings.tsx       → /settings (not /tabs/settings)
+  (auth)/              → Another route group
+    login.tsx          → /login
+    register.tsx       → /register
+```
+
+**Why use route groups?**
+- **Organization**: Group related screens together
+- **Layouts**: Apply different layouts to different groups
+- **No URL impact**: `(tabs)` doesn't add `/tabs` to your URLs
+- **Clean URLs**: Your users see `/settings` not `/tabs/settings`
+
+**Square brackets `[param]` - Dynamic Routes:**
+Folders/files with square brackets create dynamic routes that accept parameters:
+
+```
+app/
+  envelope/
+    [id].tsx           → /envelope/123, /envelope/456, etc.
+  user/
+    [userId]/
+      profile.tsx      → /user/123/profile
+      settings.tsx     → /user/123/settings
+```
+
+**Accessing dynamic parameters:**
+```typescript
+import { useLocalSearchParams } from 'expo-router';
+
+export default function EnvelopeDetail() {
+  const { id } = useLocalSearchParams();
+  // id will be "123" when visiting /envelope/123
+}
+```
+
+**Underscore `_layout.tsx` - Layout Files:**
+Files starting with underscore create layouts that wrap their children:
+
+```
+app/
+  _layout.tsx          → Root layout (wraps entire app)
+  (tabs)/
+    _layout.tsx        → Tab layout (wraps tab screens)
+    index.tsx          → Wrapped by tab layout
+    settings.tsx       → Wrapped by tab layout
+```
+
+**Real Example - Your Budget App Structure:**
+```
+app/
+  _layout.tsx                    → Root app layout
+  (tabs)/                        → Route group for main app
+    _layout.tsx                  → Tab navigator layout
+    index.tsx                    → / (Home tab - main entry point)
+    envelopes.tsx                → /envelopes (Envelopes tab)
+    transactions.tsx             → /transactions (Transactions tab)
+    settings.tsx                 → /settings (Settings tab)
+    explore.tsx                  → /explore (Explore tab)
+  envelope/                      → Regular folder (appears in URL)
+    [id].tsx                     → /envelope/123 (Dynamic route)
+  transaction/                   → Regular folder
+    add.tsx                      → /transaction/add
+  +not-found.tsx                 → 404 page for unknown routes
+```
+
+**What users see in URLs:**
+- ✅ `/` - Home (served by `(tabs)/index.tsx`)
+- ✅ `/envelopes` - Envelopes list
+- ✅ `/envelope/123` - Specific envelope
+- ✅ `/transaction/add` - Add transaction
+- ❌ `/tabs/settings` - This would be wrong!
+- ❌ `/tabs/` - This would be wrong!
+
 ### Navigation Types
 
 **Stack Navigation** (Screens stack on top):

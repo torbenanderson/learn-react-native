@@ -24,6 +24,10 @@ export default function HomeScreen() {
         title="Go to Settings" 
         onPress={() => router.push('/settings')}
       />
+      <Button 
+        title="Add Transaction" 
+        onPress={() => router.push('/transaction/add')}
+      />
     </View>
       <AllocateFunds />
      
