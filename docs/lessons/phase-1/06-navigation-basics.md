@@ -32,6 +32,89 @@ app/
     transactions.tsx    → Tab transactions
 ```
 
+### Understanding Special Folder Names
+
+**Parentheses `(folder)` - Route Groups:**
+Folders wrapped in parentheses create **route groups** that don't affect the URL structure but organize your navigation:
+
+```
+app/
+  (tabs)/              → Route group (doesn't appear in URL)
+    _layout.tsx        → Tab navigator
+    index.tsx          → / (not /tabs)
+    settings.tsx       → /settings (not /tabs/settings)
+  (auth)/              → Another route group
+    login.tsx          → /login
+    register.tsx       → /register
+```
+
+**Why use route groups?**
+- **Organization**: Group related screens together
+- **Layouts**: Apply different layouts to different groups
+- **No URL impact**: `(tabs)` doesn't add `/tabs` to your URLs
+- **Clean URLs**: Your users see `/settings` not `/tabs/settings`
+
+**Square brackets `[param]` - Dynamic Routes:**
+Folders/files with square brackets create dynamic routes that accept parameters:
+
+```
+app/
+  envelope/
+    [id].tsx           → /envelope/123, /envelope/456, etc.
+  user/
+    [userId]/
+      profile.tsx      → /user/123/profile
+      settings.tsx     → /user/123/settings
+```
+
+**Accessing dynamic parameters:**
+```typescript
+import { useLocalSearchParams } from 'expo-router';
+
+export default function EnvelopeDetail() {
+  const { id } = useLocalSearchParams();
+  // id will be "123" when visiting /envelope/123
+}
+```
+
+**Underscore `_layout.tsx` - Layout Files:**
+Files starting with underscore create layouts that wrap their children:
+
+```
+app/
+  _layout.tsx          → Root layout (wraps entire app)
+  (tabs)/
+    _layout.tsx        → Tab layout (wraps tab screens)
+    index.tsx          → Wrapped by tab layout
+    settings.tsx       → Wrapped by tab layout
+```
+
+**Real Example - Your Budget App Structure:**
+```
+app/
+  _layout.tsx                    → Root app layout
+  (tabs)/                        → Route group for main app
+    _layout.tsx                  → Tab navigator layout
+    index.tsx                    → / (Home tab - main entry point)
+    envelopes.tsx                → /envelopes (Envelopes tab)
+    transactions.tsx             → /transactions (Transactions tab)
+    settings.tsx                 → /settings (Settings tab)
+    explore.tsx                  → /explore (Explore tab)
+  envelope/                      → Regular folder (appears in URL)
+    [id].tsx                     → /envelope/123 (Dynamic route)
+  transaction/                   → Regular folder
+    add.tsx                      → /transaction/add
+  +not-found.tsx                 → 404 page for unknown routes
+```
+
+**What users see in URLs:**
+- ✅ `/` - Home (served by `(tabs)/index.tsx`)
+- ✅ `/envelopes` - Envelopes list
+- ✅ `/envelope/123` - Specific envelope
+- ✅ `/transaction/add` - Add transaction
+- ❌ `/tabs/settings` - This would be wrong!
+- ❌ `/tabs/` - This would be wrong!
+
 ### Navigation Types
 
 **Stack Navigation** (Screens stack on top):
@@ -196,6 +279,89 @@ router.push('/envelope/123');
 
 ### Example 4: Link Component
 
+The **Link component** is a declarative way to navigate between screens. It's similar to HTML `<a>` tags but for React Native navigation.
+
+**What is the Link component?**
+
+**"Declarative" means what?**
+Instead of writing "when this happens, do this" (imperative), you write "this IS a navigation element" (declarative).
+
+```typescript
+// IMPERATIVE (useRouter) - "When pressed, navigate"
+<TouchableOpacity onPress={() => router.push('/envelope/123')}>
+  <Text>View Envelope</Text>
+</TouchableOpacity>
+
+// DECLARATIVE (Link) - "This IS a navigation element"
+<Link href="/envelope/123">
+  <Text>View Envelope</Text>
+</Link>
+```
+
+**What does each point actually mean?**
+
+1. **"Handles navigation automatically"** - You don't write `onPress` handlers. The Link knows it should navigate when tapped.
+
+2. **"Renders as a pressable element"** - Link creates a React Native `Pressable` component internally, which is like a TouchableOpacity but more modern and accessible. It handles touch events, focus states, and accessibility automatically.
+
+   **What is Pressable?**
+   - React Native's modern touchable component (replaces TouchableOpacity)
+   - Handles press states (pressed, hovered, focused)
+   - Built-in accessibility support
+   - More customizable than TouchableOpacity
+   
+   **What is TouchableOpacity?**
+   - React Native's older touchable component
+   - Makes content tappable with a fade effect when pressed
+   - Basic touch handling but limited customization
+   - Still widely used but Pressable is preferred for new code
+   
+   **Example of TouchableOpacity:**
+   ```typescript
+   <TouchableOpacity onPress={() => console.log('Pressed!')}>
+     <Text>Tap me!</Text>
+   </TouchableOpacity>
+   ```
+   
+   **So this:**
+   ```typescript
+   <Link href="/envelope/123">View Envelope</Link>
+   ```
+   
+   **Is equivalent to:**
+   ```typescript
+   <Pressable onPress={() => router.push('/envelope/123')}>
+     <Text>View Envelope</Text>
+   </Pressable>
+   ```
+
+3. **"Can wrap custom components using asChild"** - Instead of Link creating its own pressable, you can make YOUR component pressable:
+   ```typescript
+   <Link href="/envelope/123" asChild>
+     <MyCustomButton /> {/* This becomes the pressable element */}
+   </Link>
+   ```
+
+4. **"Better accessibility and user experience"** - Link automatically adds:
+   - Screen reader labels ("Navigate to envelope 123")
+   - Proper focus management
+   - Keyboard navigation support
+   - Haptic feedback on supported devices
+
+**Basic Link usage:**
+```typescript
+import { Link } from 'expo-router';
+
+// Simple link that renders as text
+<Link href="/envelope/123">View Envelope</Link>
+
+// Link with custom styling
+<Link href="/envelope/123" style={{ color: 'blue', fontSize: 16 }}>
+  View Envelope
+</Link>
+```
+
+**Link with custom components (asChild prop):**
 ```typescript
 import { Link } from 'expo-router';
 
@@ -205,6 +371,139 @@ import { Link } from 'expo-router';
   </TouchableOpacity>
 </Link>
 ```
+
+**Key benefits of Link component:**
+
+- **Declarative**: Navigation logic is in the JSX, not in event handlers
+  ```typescript
+  // Less code, clearer intent
+  <Link href="/envelope/123">View</Link>
+  // vs
+  <TouchableOpacity onPress={() => router.push('/envelope/123')}>View</TouchableOpacity>
+  ```
+
+- **Accessibility**: Automatically handles screen reader support
+  - Screen readers announce "Link, View Envelope" instead of just "View Envelope"
+  - Proper focus management for keyboard users
+
+- **Performance**: Optimized for navigation
+  - Link preloads route information
+  - Faster navigation transitions
+  - Better memory management for large navigation stacks
+
+- **Type safety**: TypeScript support for route parameters
+  ```typescript
+  // TypeScript knows these params exist
+  <Link href="/envelope/[id]" params={{ id: "123" }} />
+  ```
+
+- **Custom styling**: Can wrap any component with `asChild`
+  ```typescript
+  <Link href="/envelope/123" asChild>
+    <MyStyledCard /> {/* Your custom component becomes navigable */}
+  </Link>
+  ```
+
+**When to use Link vs useRouter:**
+- **Use Link** for: Simple navigation, buttons, list items, cards
+- **Use useRouter** for: Complex logic, conditional navigation, form submissions
+
+### Example 5: When to Use Link - List Items
+
+**Perfect for Link**: Navigation cards in a list
+```typescript
+// app/(tabs)/envelopes.tsx
+import { Link } from 'expo-router';
+
+export default function EnvelopesScreen() {
+  const envelopes = [
+    { id: '1', name: 'Groceries', allocated: 500, spent: 325.50 },
+    { id: '2', name: 'Rent', allocated: 1200, spent: 1200 },
+    { id: '3', name: 'Gas', allocated: 150, spent: 89.25 },
+  ];
+
+  return (
+    <ScrollView>
+      {envelopes.map(envelope => (
+        <Link 
+          key={envelope.id}
+          href={{
+            pathname: '/envelope/[id]',
+            params: { 
+              id: envelope.id, 
+              name: envelope.name,
+              allocated: envelope.allocated.toString(),
+              spent: envelope.spent.toString()
+            }
+          }}
+          asChild
+        >
+          <View style={styles.envelopeCard}>
+            <Text style={styles.envelopeName}>{envelope.name}</Text>
+            <Text style={styles.envelopeAmount}>
+              ${envelope.allocated - envelope.spent} remaining
+            </Text>
+          </View>
+        </Link>
+      ))}
+    </ScrollView>
+  );
+}
+```
+
+**Why Link is perfect here:**
+- Each card is a simple navigation action
+- No complex logic needed
+- Users expect list items to be tappable
+- Automatic accessibility for screen readers
+- Clean, readable code
+
+**When you'd use useRouter instead:**
+```typescript
+// Complex logic - use useRouter
+const handleEnvelopePress = (envelope) => {
+  if (envelope.isLocked) {
+    Alert.alert('Locked', 'This envelope is locked');
+    return;
+  }
+  
+  if (envelope.needsPassword) {
+    // Show password modal first
+    setShowPasswordModal(true);
+    setSelectedEnvelope(envelope);
+  } else {
+    router.push(`/envelope/${envelope.id}`);
+  }
+};
+
+<TouchableOpacity onPress={() => handleEnvelopePress(envelope)}>
+  <Text>{envelope.name}</Text>
+</TouchableOpacity>
+```
+
+**Does Link affect screen stacking or full screen updates?**
+
+**Screen Stacking**: Both Link and useRouter do the same thing - they push screens onto the navigation stack. No difference here.
+
+**Full Screen Updates**: Link doesn't change how screens render. The difference is in the navigation mechanism:
+
+```typescript
+// Both of these do the same navigation
+<Link href="/envelope/123">View</Link>
+<TouchableOpacity onPress={() => router.push('/envelope/123')}>View</TouchableOpacity>
+
+// Both result in the same screen transition
+// Both update the navigation stack the same way
+// Both trigger the same screen lifecycle methods
+```
+
+**The real differences are:**
+1. **Code clarity** - Link is more readable
+2. **Accessibility** - Link adds screen reader support
+3. **Performance** - Link can preload route data
+4. **Developer experience** - Link has better TypeScript support
+
+**Bottom line**: Link is just a more convenient way to do the same navigation that useRouter does. It doesn't change how screens stack or update.
 
 ## 🛠️ Hands-On Exercise
 

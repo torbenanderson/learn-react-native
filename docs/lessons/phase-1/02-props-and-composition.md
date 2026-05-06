@@ -23,19 +23,117 @@ function EnvelopeCard(props) {
 
 ### Destructuring Props
 
-Instead of writing `props.name` everywhere, we can destructure:
+**What is Destructuring?**
+
+Destructuring is a **real JavaScript feature** (ES6) that extracts values from objects or arrays into separate variables.
+
+**It's not React-specific - it works with any JavaScript object:**
+
+```javascript
+// Regular object destructuring (plain JavaScript)
+const person = { name: "Torben", age: 30, city: "NYC" };
+
+// Without destructuring - access properties one by one
+const name = person.name;
+const age = person.age;
+const city = person.city;
+
+// With destructuring - extract multiple properties at once
+const { name, age, city } = person;
+// Now you have: name = "Torben", age = 30, city = "NYC"
+```
+
+**In React components, props is just an object, so we destructure it the same way:**
 
 ```typescript
-// Without destructuring
+// Without destructuring - props is an object
 function EnvelopeCard(props) {
-  return <Text>{props.name}</Text>;
+  return <Text>{props.name}</Text>;  // Access with props.name
 }
 
-// With destructuring (cleaner!)
+// With destructuring - extract name from props object
 function EnvelopeCard({ name }) {
+  return <Text>{name}</Text>;  // Use name directly
+}
+
+// This is the same as:
+function EnvelopeCard(props) {
+  const { name } = props;  // Destructure inside function
   return <Text>{name}</Text>;
 }
 ```
+
+**Why use it?**
+- Less typing (`name` vs `props.name`)
+- Clearer - you see what props the component uses
+- Standard JavaScript - not React magic!
+
+### Props vs Object-Oriented Programming (OOP)
+
+**If you come from OOP (Java, C#, Python classes), here's how props relate:**
+
+**Similarities:**
+```typescript
+// OOP: Constructor parameters
+class Car {
+  constructor(brand, model, year) {
+    this.brand = brand;
+    this.model = model;
+    this.year = year;
+  }
+}
+const myCar = new Car("Toyota", "Camry", 2024);
+
+// React: Component props (similar idea - passing data when creating)
+function Car({ brand, model, year }) {
+  return <Text>{brand} {model} ({year})</Text>;
+}
+<Car brand="Toyota" model="Camry" year={2024} />
+```
+
+**Key Differences:**
+
+| OOP (Classes) | React (Props) |
+|---------------|---------------|
+| `this.brand` (mutable - can change) | `props.brand` (immutable - can't change) |
+| Two-way: methods can modify internal state | One-way: parent passes down, child can't modify |
+| Objects have methods (behavior) | Components just receive data (no "methods") |
+| `new Car()` creates instance with state | `<Car />` is called each render, no persistent instance |
+
+**React is NOT Object-Oriented Programming:**
+- React uses **Functional Programming** principles
+- Components are functions, not classes (we avoid class components now)
+- Props are immutable (can't be changed by the child)
+- Data flows one direction (parent → child only)
+
+**Think of props like:**
+- **Function parameters** (closest analogy) ✅
+- ~~Object properties~~ (not quite - props are read-only)
+- ~~Constructor arguments~~ (no instance is created)
+
+**Example showing the difference:**
+```typescript
+// OOP - Object can modify itself
+class BankAccount {
+  constructor(balance) {
+    this.balance = balance;
+  }
+  
+  withdraw(amount) {
+    this.balance -= amount;  // Modifies internal state
+  }
+}
+
+// React - Component CANNOT modify props
+function BankAccount({ balance }) {
+  const handleWithdraw = () => {
+    balance -= 100;  // ❌ ERROR! Can't modify props
+    // Instead, you'd tell the parent to update (we'll learn this in Lesson 03)
+  }
+}
+```
+
+**Bottom line:** If you know OOP, think of props as **immutable function parameters**, not object properties.
 
 ### TypeScript and Props
 
@@ -52,6 +150,56 @@ function EnvelopeCard({ name, allocated, spent }: EnvelopeCardProps) {
   return <Text>{name}</Text>;
 }
 ```
+
+**Why is it called "interface"?**
+
+The word **interface** comes from programming terminology meaning "a contract that defines what something should look like."
+
+**The concept:**
+- An **interface** defines the **shape** of an object (what properties it has and their types)
+- It's like a blueprint or contract that says "any object following this interface must have these properties"
+- It doesn't create anything - it just describes what the object should look like
+
+**Real-world analogy:**
+Think of a **power outlet interface**:
+- The outlet defines: 2 or 3 prongs, specific voltage, specific shape
+- Any plug that matches this interface will work
+- The interface doesn't create electricity - it defines the contract
+
+**In TypeScript:**
+```typescript
+// Interface defines the contract: "Props must have these 3 properties"
+interface EnvelopeCardProps {
+  name: string;      // Must have a name (text)
+  allocated: number; // Must have allocated amount (number)
+  spent: number;     // Must have spent amount (number)
+}
+
+// This component MUST receive props matching that interface
+function EnvelopeCard(props: EnvelopeCardProps) {
+  // TypeScript guarantees props.name exists and is a string
+  // TypeScript guarantees props.allocated exists and is a number
+  // TypeScript guarantees props.spent exists and is a number
+}
+```
+
+**Why not just call it "Props" or "Type"?**
+- `interface` is a TypeScript/programming keyword (like `function`, `const`, `class`)
+- It specifically means "defines the structure of an object"
+- TypeScript also has `type` which is similar but slightly different (we'll use `interface` for props)
+
+**The naming convention:**
+```typescript
+interface ComponentNameProps {
+  // props definition
+}
+// Examples:
+interface EnvelopeCardProps { ... }
+interface ButtonProps { ... }
+interface UserCardProps { ... }
+```
+
+**Bottom line:** `interface` = "contract defining what shape the props object must have" - it ensures you pass the right data with the right types!
 
 ### Component Composition
 

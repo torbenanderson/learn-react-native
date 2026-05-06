@@ -1,75 +1,120 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { View, ScrollView, StyleSheet, Text, Button } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import EnvelopeCard from '@/components/budget/EnvelopeCard';
+import MoneyCard from '@/components/budget/MoneyCard';
+import { AllocateFunds } from '@/components/budget/AllocateFunds';
+import BudgetSummary from '@/components/budget/BudgetSummary';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
+  
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container}>
+      <BudgetSummary 
+        totalIncome={3000}
+        totalAllocated={2500}
+        totalSpent={1850}
+      />
+      <View>
+      <Text>Home Screen</Text>
+      <Button 
+        title="Go to Settings" 
+        onPress={() => router.push('/settings')}
+      />
+      <Button 
+        title="Add Transaction" 
+        onPress={() => router.push('/transaction/add')}
+      />
+    </View>
+      <AllocateFunds />
+     
+        <Text style={styles.title}>Transactions</Text>
+        <MoneyCard
+          name="Groceries"
+          icon="🛒"
+          amount={-500}
+          color="#10b981"
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <MoneyCard
+          name="Rent"
+          icon="🏠"
+          amount={200}
+          color="#3b82f6"
+        />
+      <Text style={styles.title}>My Budget Envelopes</Text>
+      
+      {/* Multiple envelope cards with different data */}
+      <EnvelopeCard
+        id="1"
+        name="Groceries"
+        icon="🛒"
+        allocated={500}
+        spent={325.50}
+        color="#10b981"
+      />
+      
+      <EnvelopeCard
+        id="2"
+        name="Rent"
+        icon="🏠"
+        allocated={1200}
+        spent={1200}
+        color="#3b82f6"
+      />
+      
+      <EnvelopeCard
+        id="3"
+        name="Gas"
+        icon="⛽"
+        allocated={150}
+        spent={89.25}
+        color="#f59e0b"
+      />
+      
+      <EnvelopeCard
+        id="4"
+        name="Entertainment"
+        icon="🎬"
+        allocated={200}
+        spent={175.80}
+        color="#8b5cf6"
+      />
+      
+      <EnvelopeCard
+        id="5"
+        name="Dining Out"
+        icon="🍔"
+        allocated={100}
+        spent={95.50}
+        color="#ef4444"
+      />
+    </ScrollView>
+    </SafeAreaView>
+    
   );
 }
 
+
+// StyleSheet documentation: https://reactnative.dev/docs/stylesheet
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    padding: 5,
+    backgroundColor: '#f3f4f6',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#1f2937',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  note: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    marginTop: 8,
   },
 });
